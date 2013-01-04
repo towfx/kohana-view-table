@@ -23,18 +23,22 @@ class Table
      * @param Formo $form
      * @return Formo
      */
-    public function form(Formo_Form $form)
+    public function form($form=null)
     {
         return Formo::form();
     }
 
-    public function form_after(Formo_Form $form)
+    public function form_after($form=null)
     {
         $form->attr = array('class' => 'list-query', 'method' => 'GET');
-        $form->add('query', 'button', __('Query'), array('attr' => array('class' => 'button')))
+        $form->add('___','rawhtml','<p></p>')
+        ->add('query', 'button', __('Query'), array('attr' => array('class' => 'button')))
                 ->add('page', 'hidden')
                 ->add('column', 'hidden')
                 ->add('order', 'hidden');
+        
+        $form->query->attr=array(
+                'rel'=>'fam/icons/application_view_columns.png');
 
         $form->load(Request::current()->query());
 
@@ -46,12 +50,18 @@ class Table
      * @param ORM $model
      * @return Database_Query
      */
-    public function model($model)
+    public function model()
     {
         return ORM::factory($model);
 
         return DB::select($model);
     }
+
+    
+    public function query($model)
+    {
+        return $model;
+    }        
 
     public function filter($model, $form)
     {
@@ -163,7 +173,7 @@ class Table
         if (empty($this->columns))
         {
             // auto generate from model fields
-            $this->columns = $this->columns_discover();
+            $this->columns = $this->columns_discover($this->model);
         }
 
         // apply query
@@ -176,9 +186,9 @@ class Table
         // apply limit
         $this->model = $this->limit($this->model, $this->form);
 
-        $m = clone $this->model;
+      //  $m = clone $this->model;
 
-        $this->count_found = $m->count_all();
+     //   $this->count_found = $m->count_all();
 
         $this->model = $this->offset($this->model, $this->form);
         $this->model = $this->order($this->model, $this->form);
@@ -222,6 +232,9 @@ class Table
             $column->cell->column = $column->column;
             $column->cell->table = & $this;
             $column->cell->class = $column->class;
+            $column->cell->callback = $column->callback;
+            
+            $column->cell->parameters = $column->parameters;
         }
 
         $this->pagination =
@@ -249,7 +262,7 @@ class Table
                 ->set('rows', $this->rows($this->model))
                 ->set('pagination', $this->pagination)
                 ->set('form', $this->form)
-                ->set('count', $this->count_found);
+                ->set('count', $this->count);
 
         return $this->_view;
     }
