@@ -24,7 +24,14 @@ class Table_Header
         }
         else
         {
-            return $this->title;
+            if($this->title)
+            {
+                return $this->title;
+            }
+            else
+            {
+                return $this->column;
+            }    
         }
     }
 
