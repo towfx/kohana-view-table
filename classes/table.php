@@ -7,6 +7,7 @@ class Table
     protected $title = '{TABLE TITLE}';
     protected $columns;
 
+    protected $query;
     /**
      * The resource must be initalizeed by ORM
      * @var ORM 
@@ -32,7 +33,8 @@ class Table
     {
         $form->attr = array('class' => 'list-query', 'method' => 'GET');
         $form->add('___','rawhtml','<p></p>')
-        ->add('query', 'button', __('Query'), array('attr' => array('class' => 'button')))
+        ->add('query', 'button', __('Query'), array('attr' => array('class' => 'button unprint')))
+                ->add('print', 'button', __('Print'), array('attr' => array('class' => 'button print unprint')))
                 ->add('page', 'hidden')
                 ->add('column', 'hidden')
                 ->add('order', 'hidden');
@@ -40,10 +42,25 @@ class Table
         $form->query->attr=array(
                 'rel'=>'fam/icons/application_view_columns.png');
 
-        $form->load(Request::current()->query());
+        $form->load($this->params());
 
         return $form;
     }
+    
+    public function params($query=null)
+    {
+        if($query)
+        {
+            $this->query = $query;
+        }
+        
+        if(!$this->query)
+        {
+            $this->query = Request::current()->query();
+        }
+        
+        return $this->query;
+    }        
 
     /**
      * Set the model
@@ -163,9 +180,12 @@ class Table
 
         // get the declared form
         $this->form = $this->form();
+        
+      
 
         // get the internally required fields
         $this->form = $this->form_after($this->form);
+        
 
         $this->model = $this->model();
 
