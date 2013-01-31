@@ -28,12 +28,17 @@ class Table
     {
         return Formo::form();
     }
+    
+    public function form_append($form)
+    {
+        return $form;
+    }        
 
     public function form_after($form=null)
     {
         $form->attr = array('class' => 'list-query', 'method' => 'GET');
         $form->add('___','rawhtml','<p></p>')
-        ->add('query', 'button', __('Query'), array('attr' => array('class' => 'button unprint')))
+        ->add('query', 'button', __('Query'), array('attr' => array('class' => 'unprint button')))
                 ->add('print', 'button', __('Print'), array('attr' => array('class' => 'button print unprint')))
                 ->add('page', 'hidden')
                 ->add('column', 'hidden')
@@ -42,7 +47,10 @@ class Table
         $form->query->attr=array(
                 'rel'=>'fam/icons/application_view_columns.png');
 
+        $form = $this->form_append($form);
+        
         $form->load($this->params());
+        
 
         return $form;
     }

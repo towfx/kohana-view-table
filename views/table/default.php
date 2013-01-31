@@ -1,5 +1,4 @@
 <?php echo $form; ?>
-<p>&nbsp;</p>
 <table class="table">
     <caption><?php $title ?></caption>
     <thead>
