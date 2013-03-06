@@ -6,8 +6,8 @@ class Table
     protected $initialized;
     protected $title = '{TABLE TITLE}';
     protected $columns;
-
     protected $query;
+
     /**
      * The resource must be initalizeed by ORM
      * @var ORM 
@@ -24,51 +24,54 @@ class Table
      * @param Formo $form
      * @return Formo
      */
-    public function form($form=null)
+    public function form($form = null)
     {
         return Formo::form();
     }
-    
+
     public function form_append($form)
     {
         return $form;
-    }        
+    }
 
-    public function form_after($form=null)
+    public function form_after($form = null)
     {
         $form->attr = array('class' => 'list-query', 'method' => 'GET');
-        $form->add('___','rawhtml','<p></p>')
-        ->add('query', 'button', __('Query'), array('attr' => array('class' => 'unprint button')))
-                ->add('print', 'button', __('Print'), array('attr' => array('class' => 'button print unprint')))
-                ->add('page', 'hidden')
-                ->add('column', 'hidden')
-                ->add('order', 'hidden');
-        
-        $form->query->attr=array(
-                'rel'=>'fam/icons/application_view_columns.png');
+        $form->add('___', 'rawhtml', '<p></p>')
+                ->add('query', 'button', __('Query'), array('attr' => array('class' => 'unprint button')))
+                ->add('print', 'button', __('Print'), array('attr' => array('class' => 'button print unprint')));
 
         $form = $this->form_append($form);
-        
+
+        $form->add('page', 'hidden')
+                ->add('column', 'hidden')
+                ->add('order', 'hidden');
+
+        $form->query->attr = array(
+            'rel' => 'fam/icons/application_view_columns.png');
+
+
+
         $form->load($this->params());
-        
+
 
         return $form;
     }
-    
-    public function params($query=null)
+
+    public function params($query = null)
     {
-        if($query)
+        if ($query)
         {
             $this->query = $query;
         }
-        
-        if(!$this->query)
+
+        if (!$this->query)
         {
             $this->query = Request::current()->query();
         }
-        
+
         return $this->query;
-    }        
+    }
 
     /**
      * Set the model
@@ -82,11 +85,10 @@ class Table
         return DB::select($model);
     }
 
-    
     public function query($model)
     {
         return $model;
-    }        
+    }
 
     public function filter($model, $form)
     {
@@ -131,8 +133,12 @@ class Table
         return $columns;
     }
 
-    public function rows($model)
+    public function rows($model=null)
     {
+        if(!$model)
+        {
+            $model = $this->model;
+        }    
         return $model->find_all();
     }
 
@@ -188,12 +194,12 @@ class Table
 
         // get the declared form
         $this->form = $this->form();
-        
-      
+
+
 
         // get the internally required fields
         $this->form = $this->form_after($this->form);
-        
+
 
         $this->model = $this->model();
 
@@ -214,9 +220,8 @@ class Table
         // apply limit
         $this->model = $this->limit($this->model, $this->form);
 
-      //  $m = clone $this->model;
-
-     //   $this->count_found = $m->count_all();
+        //  $m = clone $this->model;
+        //   $this->count_found = $m->count_all();
 
         $this->model = $this->offset($this->model, $this->form);
         $this->model = $this->order($this->model, $this->form);
@@ -261,7 +266,7 @@ class Table
             $column->cell->table = & $this;
             $column->cell->class = $column->class;
             $column->cell->callback = $column->callback;
-            
+
             $column->cell->parameters = $column->parameters;
         }
 
