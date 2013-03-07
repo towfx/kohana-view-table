@@ -16,8 +16,8 @@ class Table
     protected $_view;
     protected $_view_template = 'table/default';
     protected $pagination;
-    protected $form;
-    protected $per_page = 10;
+    public $form;
+    public $per_page = 10;
 
     /**
      * Method form must return Formo object
@@ -184,7 +184,7 @@ class Table
      * Factory sequence. Execute all machines below!
      * @return void
      */
-    protected function factory()
+    public function factory()
     {
         if (Kohana::DEVELOPMENT)
         {
@@ -223,9 +223,10 @@ class Table
         //  $m = clone $this->model;
         //   $this->count_found = $m->count_all();
 
+        if($this->per_page){
         $this->model = $this->offset($this->model, $this->form);
         $this->model = $this->order($this->model, $this->form);
-
+        }
 
         //    echo Debug::vars($this->columns);
 
